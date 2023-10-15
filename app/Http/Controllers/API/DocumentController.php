@@ -26,7 +26,7 @@ class DocumentController extends Controller
     public function index(Request $request): DocumentsResource
     {
         $query = $request->query();
-        $perPage = $query['per_page'] ?? 20;
+        $perPage = $query['perPage'] ?? 20;
         $documents = Document::paginate($perPage, ['*']);
         return new DocumentsResource($documents);
     }
@@ -38,6 +38,10 @@ class DocumentController extends Controller
 
     public function update(Request $request, Document $document): DocumentResource|JsonResponse
     {
+        if ($document->status === DocumentStatus::Published) {
+            return response()->json(['error' => 'Not allowed to edit a published document'], 400);
+        }
+
         $newPayload = null;
         $userDocument = $request->post();
         $userPayload = $userDocument['document']['payload'] ?? null;
@@ -55,7 +59,7 @@ class DocumentController extends Controller
         }
 
         if ($newPayload === null) {
-            $errors = ['error' => 'Bad Request',];
+            $errors = ['error' => 'Bad request'];
             if ($userPayload === null) {
                 $errors['details'] = 'Invalid input data';
             }
