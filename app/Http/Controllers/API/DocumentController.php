@@ -64,4 +64,12 @@ class DocumentController extends Controller
 
         return new DocumentResource($document);
     }
+
+    public function publish(Document $document): DocumentResource|JsonResponse
+    {
+        $document->update([
+            'status' => DocumentStatus::Published
+        ]);
+        return new DocumentResource($document);
+    }
 }
