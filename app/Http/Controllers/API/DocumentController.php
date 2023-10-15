@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Enums\DocumentStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\DocumentResource;
+use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
 use App\Services\JsonPatcher;
 use Illuminate\Http\JsonResponse;
@@ -22,9 +23,12 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
-    public function index()
+    public function index(Request $request): DocumentsResource
     {
-        return 'index';
+        $query = $request->query();
+        $perPage = $query['per_page'] ?? 20;
+        $documents = Document::paginate($perPage, ['*']);
+        return new DocumentsResource($documents);
     }
 
     public function show(Document $document): DocumentResource
