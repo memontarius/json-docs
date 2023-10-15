@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c64894b725948ea1475c6284ba95a7af",
+    "content-hash": "9293cf230e2a62f1b2a99889898c275f",
     "packages": [
         {
             "name": "brick/math",
@@ -60,6 +60,52 @@
                 }
             ],
             "time": "2023-01-15T23:15:59+00:00"
+        },
+        {
+            "name": "clue/json-merge-patch",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/clue/php-json-merge-patch.git",
+                "reference": "4d9b29e5becbfe9f47f4d010fd1840a08a1bc320"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/clue/php-json-merge-patch/zipball/4d9b29e5becbfe9f47f4d010fd1840a08a1bc320",
+                "reference": "4d9b29e5becbfe9f47f4d010fd1840a08a1bc320",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Clue\\JsonMergePatch\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Christian Lück",
+                    "email": "christian@lueck.tv"
+                }
+            ],
+            "description": "JSON merge patch (RFC 7396) is a simple alternative to JSON patch (RFC 6902)",
+            "homepage": "https://github.com/clue/php-json-merge-patch",
+            "keywords": [
+                "JSON merge patch",
+                "RFC 7396",
+                "patch file"
+            ],
+            "support": {
+                "issues": "https://github.com/clue/php-json-merge-patch/issues",
+                "source": "https://github.com/clue/php-json-merge-patch/tree/v0.1.0"
+            },
+            "time": "2015-06-07T23:08:03+00:00"
         },
         {
             "name": "dflydev/dot-access-data",

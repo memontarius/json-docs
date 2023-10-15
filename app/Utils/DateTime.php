@@ -8,6 +8,12 @@ use Illuminate\Http\Request;
 
 class DateTime
 {
+    /**
+     * Get timezone of client by the request. Check header with name 'X-Timezone', if no one, gets time zone by IP.
+     *
+     * @param Request $request
+     * @return CarbonTimeZone
+     */
     public static function getTimeZone(Request $request): CarbonTimeZone
     {
         $timeZone = 'UTC';
@@ -25,6 +31,13 @@ class DateTime
         return CarbonTimeZone::create($timeZone);
     }
 
+    /**
+     * Format time by iso-8601 with time zone
+     *
+     * @param Carbon $time
+     * @param CarbonTimeZone $timeZone
+     * @return string
+     */
     public static function formatToUtcWithTimeZone(Carbon $time, CarbonTimeZone $timeZone): string
     {
         return $time->isoFormat('YYYY-D-M HH:mm:ss') . $timeZone->toOffsetName();
