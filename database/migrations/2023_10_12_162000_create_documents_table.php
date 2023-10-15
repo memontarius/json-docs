@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('documents', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->enum('status', DocumentStatus::toArray())->default(DocumentStatus::Draft->value);
-            $table->text('payload')->default('{}');
+            $table->json('payload')->nullable()->default(null);
             $table->text('content')->nullable();
             $table->timestamps();
         });

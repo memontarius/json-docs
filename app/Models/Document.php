@@ -12,7 +12,8 @@ class Document extends Model
     protected $fillable = ['status', 'payload'];
 
     protected $casts = [
-        'status' => DocumentStatus::class
+        'status' => DocumentStatus::class,
+        'payload' => 'object'
     ];
 
     protected static function boot(): void
