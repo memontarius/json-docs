@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::prefix('v1')->group(function() {
-    Route::post('/document', [\App\Http\Controllers\API\DocumentController::class, 'create'])->name('document.create');
+    Route::post('/document', [\App\Http\Controllers\API\DocumentController::class, 'store'])->name('document.store');
     Route::get('/document/{document}', [\App\Http\Controllers\API\DocumentController::class, 'show'])->name('document.show');
     Route::patch('/document/{document}', [\App\Http\Controllers\API\DocumentController::class, 'update'])->name('document.update');
     Route::post('/document/{document}/publish', [\App\Http\Controllers\API\DocumentController::class, 'publish'])->name('document.publish');

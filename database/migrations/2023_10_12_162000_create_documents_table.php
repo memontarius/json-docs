@@ -13,9 +13,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('documents', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->enum('status', DocumentStatus::toArray())->default(DocumentStatus::Draft->value);
-            $table->text('content');
+            $table->text('payload')->default('{}');
+            $table->text('content')->nullable();
             $table->timestamps();
         });
     }
