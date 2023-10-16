@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
+use App\Services\ErrorResponder;
 use App\Services\JsonPatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -36,10 +37,10 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
-    public function update(Request $request, Document $document): DocumentResource|JsonResponse
+    public function update(Request $request, Document $document, JsonPatcher $jsonPatcher, ErrorResponder $errorResponder): DocumentResource|JsonResponse
     {
         if ($document->status === DocumentStatus::Published) {
-            return response()->json(['error' => 'Not allowed to edit a published document'], 400);
+            return $errorResponder->make('Not allowed to edit a published document', 400);
         }
 
         $newPayload = null;
@@ -52,18 +53,15 @@ class DocumentController extends Controller
                 $newPayload = $userPayload;
             } else {
                 $newPayload = $document->payload;
-                if (!JsonPatcher::create()->apply($newPayload, $userPayload)) {
+                if (!$jsonPatcher->apply($newPayload, $userPayload)) {
                     $newPayload = null;
                 }
             }
         }
 
         if ($newPayload === null) {
-            $errors = ['error' => 'Bad request'];
-            if ($userPayload === null) {
-                $errors['details'] = 'Invalid input data';
-            }
-            return response()->json($errors, 400);
+            $details = $userPayload === null ? 'Invalid input data' : '';
+            return $errorResponder->make('Bad request', 400, $details);
         }
 
         $document->update([

@@ -4,7 +4,6 @@ namespace App\Services;
 
 use Clue\JsonMergePatch\Patcher;
 
-
 class JsonPatcher
 {
     public function apply(mixed &$original, mixed $modified): bool
@@ -17,10 +16,5 @@ class JsonPatcher
         } catch (\Exception $e) {
             return false;
         }
-    }
-
-    public static function create(): static
-    {
-        return new static;
     }
 }

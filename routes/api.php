@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Services\ErrorResponder;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -21,3 +21,7 @@ Route::prefix('v1')->group(function() {
     Route::post('/document/{document}/publish', [\App\Http\Controllers\API\DocumentController::class, 'publish'])->name('document.publish');
     Route::get('/document', [\App\Http\Controllers\API\DocumentController::class, 'index'])->name('document.index');
 });
+
+Route::fallback(function (ErrorResponder $errorResponder) {
+    return $errorResponder->make('Not Found', 404);
+})->name('fallback');
