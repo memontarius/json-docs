@@ -15,13 +15,16 @@ use Illuminate\Http\Request;
 
 class DocumentController extends Controller
 {
-    public function store(): DocumentResource
+    public function store(): JsonResponse
     {
         $document = Document::create([
             'status' => DocumentStatus::Draft,
             'payload' => null,
         ]);
-        return new DocumentResource($document);
+
+        return (new DocumentResource($document))
+            ->response()
+            ->setStatusCode(200);
     }
 
     public function index(Request $request): DocumentsResource
@@ -44,8 +47,7 @@ class DocumentController extends Controller
         }
 
         $newPayload = null;
-        $userDocument = $request->post();
-        $userPayload = $userDocument['document']['payload'] ?? null;
+        $userPayload = $request->json('document.payload');
         $userPayload = json_decode(json_encode($userPayload));
 
         if ($userPayload !== null) {

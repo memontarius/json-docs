@@ -6,6 +6,13 @@ use Clue\JsonMergePatch\Patcher;
 
 class JsonPatcher
 {
+    /**
+     * Apply patching to json
+     *
+     * @param mixed $original
+     * @param mixed $modified
+     * @return bool
+     */
     public function apply(mixed &$original, mixed $modified): bool
     {
         try {

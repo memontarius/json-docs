@@ -16,7 +16,6 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->enum('status', DocumentStatus::toArray())->default(DocumentStatus::Draft->value);
             $table->json('payload')->nullable()->default(null);
-            $table->text('content')->nullable();
             $table->timestamps();
         });
     }
