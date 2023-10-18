@@ -8,7 +8,7 @@ use App\Http\Resources\DocumentResource;
 use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
 use App\Services\ErrorResponder;
-use App\Services\JsonPatcher;
+use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -40,7 +40,10 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
-    public function update(Request $request, Document $document, JsonPatcher $jsonPatcher, ErrorResponder $errorResponder): DocumentResource|JsonResponse
+    public function update(Request $request,
+                           Document $document,
+                           JsonPatcherInterface $jsonPatcher,
+                           ErrorResponder $errorResponder): DocumentResource|JsonResponse
     {
         if ($document->status === DocumentStatus::Published) {
             return $errorResponder->make('Not allowed to edit a published document', 400);

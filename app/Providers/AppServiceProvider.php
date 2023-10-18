@@ -3,13 +3,13 @@
 namespace App\Providers;
 
 use App\Services\ErrorResponder;
-use App\Services\JsonPatcher;
+use App\Services\JsonPatcher\JsonPatcherInterface;
+use App\Services\JsonPatcher\MyJsonPatcher;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
     public $singletons = [
-        JsonPatcher::class => JsonPatcher::class,
         ErrorResponder::class => ErrorResponder::class
     ];
 
@@ -18,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-
+        $this->app->bind(JsonPatcherInterface::class, MyJsonPatcher::class);
     }
 
     /**
