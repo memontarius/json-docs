@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Enums\DocumentStatus;
 use App\Http\Resources\DocumentResource;
 use App\Models\Document;
+use Database\Seeders\UsersTableSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Testing\Fluent\AssertableJson;
@@ -15,7 +16,6 @@ class DocumentControllerTest extends TestCase
     use RefreshDatabase;
 
     private string $baseUrl = '/api/v1/document';
-
 
     public function testIndex(): void
     {

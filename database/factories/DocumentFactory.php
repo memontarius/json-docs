@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\DocumentStatus;
 use App\Models\Document;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -23,7 +24,7 @@ class DocumentFactory extends Factory
     {
         return [
             'status' => DocumentStatus::Draft,
-            //'payload' => json_decode('{}'),
+            'user_id' => User::factory(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];
