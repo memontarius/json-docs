@@ -2,11 +2,14 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Route;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
+use App\Services\ErrorResponder\ErrorResponder;
+use App\Services\ErrorResponder\ResponseError;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Request;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -33,11 +36,17 @@ class Handler extends ExceptionHandler
 
     public function render($request, Exception|Throwable $exception)
     {
-        if ($request->is('api/*') &&
-            ($exception instanceof ModelNotFoundException || $exception instanceof NotFoundHttpException))
-        {
-            return Route::respondWithRoute('fallback');
+        if ($request->is('api/*')) {
+            $errorResponder = App::make(ErrorResponder::class);
+
+            if ($exception instanceof ModelNotFoundException) {
+                return $errorResponder->makeByError(ResponseError::PageNotFound);
+            } elseif ($exception instanceof ValidationException) {
+                $errors = $exception->validator->errors()->getMessages();
+                return $errorResponder->makeByError(ResponseError::ValidationFailed, null, $errors);
+            }
         }
+
         return parent::render($request, $exception);
     }
 }

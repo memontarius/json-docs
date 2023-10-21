@@ -1,6 +1,9 @@
 <?php
 
-use App\Services\ErrorResponder;
+use App\Http\Controllers\API\DocumentController;
+use App\Http\Controllers\API\UserController;
+use App\Services\ErrorResponder\ResponseError;
+use App\Services\ErrorResponder\ErrorResponder;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,14 +17,23 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::prefix('v1')->group(function() {
-    Route::post('/document', [\App\Http\Controllers\API\DocumentController::class, 'store'])->name('document.store');
-    Route::get('/document/{document}', [\App\Http\Controllers\API\DocumentController::class, 'show'])->name('document.show');
-    Route::patch('/document/{document}', [\App\Http\Controllers\API\DocumentController::class, 'update'])->name('document.update');
-    Route::post('/document/{document}/publish', [\App\Http\Controllers\API\DocumentController::class, 'publish'])->name('document.publish');
-    Route::get('/document', [\App\Http\Controllers\API\DocumentController::class, 'index'])->name('document.index');
+Route::prefix('v1')->group(function () {
+    Route::post('/login', [UserController::class, 'login'])->name('login');
+
+    Route::prefix('document')->group(function () {
+        Route::post('/', [DocumentController::class, 'store']);
+        Route::get('/{document}', [DocumentController::class, 'show']);
+        Route::patch('/{document}', [DocumentController::class, 'update']);
+        Route::post('/{document}/publish', [DocumentController::class, 'publish']);
+        Route::get('/', [DocumentController::class, 'index'])->name('document.index');
+    });
 });
 
+Route::any('{any}', function (ErrorResponder $errorResponder) {
+    return $errorResponder->makeByError(ResponseError::PageNotFound);
+})->where('any', '.*')->name('fallback');
+
+/* Not working with POST methods
 Route::fallback(function (ErrorResponder $errorResponder) {
-    return $errorResponder->make('Not Found', 404);
-})->name('fallback');
+    return $errorResponder->makeByError(ResponseError::PageNotFound);
+})->name('fallback');*/

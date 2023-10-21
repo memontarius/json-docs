@@ -7,7 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
-use App\Services\ErrorResponder;
+use App\Services\ErrorResponder\ResponseError;
+use App\Services\ErrorResponder\ErrorResponder;
 use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class DocumentController extends Controller
 {
     public function store(): JsonResponse
     {
-        $document = Document::create([
+        $document = Document::query()->create([
             'status' => DocumentStatus::Draft,
             'payload' => null,
         ]);
@@ -31,7 +32,7 @@ class DocumentController extends Controller
     {
         $query = $request->query();
         $perPage = $query['perPage'] ?? 20;
-        $documents = Document::paginate($perPage, ['*']);
+        $documents = Document::query()->paginate($perPage, ['*']);
         return new DocumentsResource($documents);
     }
 
@@ -45,6 +46,7 @@ class DocumentController extends Controller
                            JsonPatcherInterface $jsonPatcher,
                            ErrorResponder $errorResponder): DocumentResource|JsonResponse
     {
+
         if ($document->status === DocumentStatus::Published) {
             return $errorResponder->make('Not allowed to edit a published document', 400);
         }
@@ -65,8 +67,7 @@ class DocumentController extends Controller
         }
 
         if ($newPayload === null) {
-            $details = $userPayload === null ? 'Invalid input data' : '';
-            return $errorResponder->make('Bad request', 400, $details);
+            return $errorResponder->makeByError(ResponseError::BadRequest);
         }
 
         $document->update([
