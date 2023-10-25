@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\DocumentStatus;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -37,4 +38,23 @@ class Document extends Model
         return 'string';
     }
 
+    /**
+     * @param Authenticatable|null $user
+     * @param Document $document
+     * @return bool
+     */
+    public function hasAccess(?Authenticatable $user): bool
+    {
+        return ($this->isOwner($user, $this) || $this->status === DocumentStatus::Published);
+    }
+
+    /**
+     * @param Authenticatable|null $user
+     * @param Document $document
+     * @return bool
+     */
+    public function isOwner(?Authenticatable $user): bool
+    {
+        return $user && $user->id === $this->user_id;
+    }
 }
