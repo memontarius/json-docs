@@ -11,8 +11,9 @@ class Document extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['status', 'payload'];
-    
+    protected $fillable = ['status', 'payload', 'user_id'];
+    protected $hidden = ['user_id'];
+
     protected $casts = [
         'status' => DocumentStatus::class,
         'payload' => 'object'

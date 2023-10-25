@@ -21,16 +21,29 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name('login');
 
     Route::prefix('document')->group(function () {
-        Route::post('/', [DocumentController::class, 'store']);
-        Route::get('/{document}', [DocumentController::class, 'show']);
-        Route::patch('/{document}', [DocumentController::class, 'update']);
-        Route::post('/{document}/publish', [DocumentController::class, 'publish']);
-        Route::get('/', [DocumentController::class, 'index'])->name('document.index');
+
+        Route::middleware('auth.optional:sanctum')->group(function () {
+            Route::get('/{document}', [DocumentController::class, 'show']);
+            Route::get('/', [DocumentController::class, 'index'])->name('document.index');
+        });
+
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::post('/', [DocumentController::class, 'store']);
+            Route::patch('/{document}', [DocumentController::class, 'update']);
+            Route::post('/{document}/publish', [DocumentController::class, 'publish']);
+        });
     });
 });
 
-Route::any('{any}', function (ErrorResponder $errorResponder) {
-    return $errorResponder->makeByError(ResponseError::PageNotFound);
+Route::any('{any}', function (ErrorResponder $errorResponder, $any) {
+
+    $responseErrorParam = request()->input('response_error');
+
+    $responseError = $responseErrorParam ?
+        ResponseError::tryFrom($responseErrorParam) ?? ResponseError::PageNotFound :
+        ResponseError::PageNotFound;
+
+    return $errorResponder->makeByError($responseError);
 })->where('any', '.*')->name('fallback');
 
 /* Not working with POST methods

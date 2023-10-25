@@ -16,7 +16,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->enum('status', DocumentStatus::toArray())->default(DocumentStatus::Draft->value);
             $table->json('payload')->nullable()->default(null);
-            $table->foreignId('user_id')->nullable()->references('user_id')->on('users');
+            $table->foreignId('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }

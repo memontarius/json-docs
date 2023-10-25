@@ -4,8 +4,10 @@ namespace App\Exceptions;
 
 use App\Services\ErrorResponder\ErrorResponder;
 use App\Services\ErrorResponder\ResponseError;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Validation\ValidationException;
@@ -36,6 +38,7 @@ class Handler extends ExceptionHandler
 
     public function render($request, Exception|Throwable $exception)
     {
+
         if ($request->is('api/*')) {
             $errorResponder = App::make(ErrorResponder::class);
 
@@ -44,6 +47,10 @@ class Handler extends ExceptionHandler
             } elseif ($exception instanceof ValidationException) {
                 $errors = $exception->validator->errors()->getMessages();
                 return $errorResponder->makeByError(ResponseError::ValidationFailed, null, $errors);
+            } elseif ($exception instanceof MethodNotAllowedHttpException) {
+                return $errorResponder->makeByError(ResponseError::PageNotFound);
+            } elseif ($exception instanceof AuthenticationException) {
+                return $errorResponder->makeByError(ResponseError::AuthenticationFailed);
             }
         }
 
