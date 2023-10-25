@@ -5,10 +5,11 @@ namespace Tests\Feature;
 use App\Enums\DocumentStatus;
 use App\Http\Resources\DocumentResource;
 use App\Models\Document;
-use Database\Seeders\UsersTableSeeder;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Testing\Fluent\AssertableJson;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
 class DocumentControllerTest extends TestCase
@@ -35,6 +36,8 @@ class DocumentControllerTest extends TestCase
     public function testPublish(): void
     {
         $document = Document::factory()->create();
+        Sanctum::actingAs(User::find($document->user_id));
+
         $url = "{$this->baseUrl}/{$document->id}/publish";
         $response = $this->postJson($url);
 
@@ -45,6 +48,7 @@ class DocumentControllerTest extends TestCase
     public function testShow(): void
     {
         $document = Document::factory()->create();
+        Sanctum::actingAs(User::find($document->user_id));
         $response = $this->getJson("{$this->baseUrl}/{$document->id}");
 
         $docRes =  new DocumentResource($document);
@@ -56,6 +60,7 @@ class DocumentControllerTest extends TestCase
 
     public function testStore(): void
     {
+        Sanctum::actingAs(User::factory()->create());
         $response = $this->postJson("{$this->baseUrl}");
 
         $response->assertStatus(200)
@@ -94,6 +99,7 @@ class DocumentControllerTest extends TestCase
         $document = Document::factory()->create([
             'payload' => $json
         ]);
+        Sanctum::actingAs(User::find($document->user_id));
 
         $url = "{$this->baseUrl}/{$document->id}";
         $response = $this->patchJson($url, [
@@ -114,7 +120,7 @@ class DocumentControllerTest extends TestCase
 
     public function testNotFound(): void
     {
-        $response = $this->getJson("{$this->baseUrl}/test");
+        $response = $this->getJson("{$this->baseUrl}/testing_not_found_page");
         $response->assertStatus(404);
     }
 }
