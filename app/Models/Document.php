@@ -6,6 +6,7 @@ use App\Enums\DocumentStatus;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 
 class Document extends Model
@@ -56,5 +57,10 @@ class Document extends Model
     public function isOwner(?Authenticatable $user): bool
     {
         return $user && $user->id === $this->user_id;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id', 'users');
     }
 }
