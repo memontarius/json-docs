@@ -14,6 +14,26 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class DocumentFactory extends Factory
 {
     protected $model = Document::class;
+    private array $payloads = [
+        null, null,
+        [
+            "actor" => "The fox",
+            "meta" => [
+                "type" => "quick",
+                "color" => "brown"
+            ],
+            "actions" => [
+                [
+                    "action" => "jump over",
+                    "actor" => "lazy dog"
+                ]
+            ]
+        ],
+        [
+            "actor" => "The fox",
+            "position" => 'bottom'
+        ]
+    ];
 
     /**
      * Define the model's default state.
@@ -23,8 +43,9 @@ class DocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => DocumentStatus::Draft,
+            'status' => $this->faker->randomElement([DocumentStatus::Published]),
             'user_id' => User::factory(),
+            'payload' => $this->faker->randomElement($this->payloads),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];

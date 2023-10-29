@@ -17,7 +17,7 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => implode(' ', [$this->faker->firstName, $this->faker->lastName]),
+            'name' => $this->faker->firstName(),
             'remember_token' => $this->faker->uuid(),
         ];
     }

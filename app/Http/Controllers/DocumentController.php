@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 
 class DocumentController extends Controller
@@ -12,31 +14,58 @@ class DocumentController extends Controller
 
     public function index()
     {
-        $requestUri = $this->buildRequestUri($this->apiUrl, queryString: request()->getQueryString());
-        $content = $this->requestContent($requestUri);
-
+        $content = $this->handleRequest();
         return view('document.home', compact('content'));
     }
 
     public function show(string $id)
     {
-        $content = $this->requestContent($this->buildRequestUri($this->apiUrl, $id));
+        $content = $this->handleRequest($id);
         $document = $content['document'];
-
         return view('document.show', compact('document'));
     }
 
-    private function requestContent($uri): array
+    private function handleRequest(string $path = ''): ?array
     {
-        $apiRequest = Request::create($uri, 'GET');
-        $response = Route::dispatch($apiRequest);
-        return json_decode($response->getContent(), true);
+        $requestUri = $this->buildUri($this->apiUrl, $path);
+        $responseCode = $this->getContent($this->request($requestUri), $content);
+        if ($responseCode) {
+            abort($responseCode);
+        }
+        return $content;
     }
 
-    private function buildRequestUri($baseApi, $path = '', $queryString = ''): string
+    /**
+     * Create request and perform it
+     *
+     * @param $uri
+     * @return Response
+     */
+    private function request($uri): Response
     {
-        $queryString = empty($queryString) ? '' : "?$queryString";
+        $apiRequest = Request::create($uri,'GET');
+        return Route::dispatch($apiRequest);
+    }
+
+    /**
+     * Get content from response
+     *
+     * @param Response $response
+     * @param array|null $content
+     * @return int|null
+     */
+    private function getContent(Response $response, ?array &$content): ?int
+    {
+        if ($response->getStatusCode() != 200) {
+            return $response->getStatusCode();
+        }
+        $content = json_decode($response->getContent(), true);
+        return $content !== null ? null : 429;
+    }
+
+    private function buildUri(string $baseApi, string $path = ''): string
+    {
         $path = empty($path) ? '' : "/$path";
-        return "{$baseApi}{$path}{$queryString}";
+        return "{$baseApi}{$path}";
     }
 }

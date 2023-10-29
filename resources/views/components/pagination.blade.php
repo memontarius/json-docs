@@ -11,38 +11,41 @@
 <div class="flex flex-col items-center mt-12">
     <!-- Help text -->
     <span class="text-sm text-gray-700 dark:text-gray-400">
-                Показано от <span class="font-semibold text-gray-900 dark:text-white">{{ $startNumber }}</span> до <span
-            class="font-semibold text-gray-900 dark:text-white">{{ $endNumber }}</span> из <span
-            class="font-semibold text-gray-900 dark:text-white">{{ $args['total'] }}</span>
+        @if ($total > 0)
+            Показано от
+            <span class="font-semibold text-gray-900 dark:text-white">{{ $startNumber }}</span> до
+            <span class="font-semibold text-gray-900 dark:text-white">{{ $endNumber }}</span> из
+        @endif
+        <span class="font-semibold text-gray-900 dark:text-white">{{ $args['total'] }}</span>
         @php
             echo ($total == 1 || ($total > 20 && $total % 10 == 1)) ? 'Документа' : 'Документов';
         @endphp
     </span>
     <!-- Buttons -->
     @if (!($startNumber == 1 && $endNumber == $total))
-    <div class="inline-flex mt-2 xs:mt-0">
-        <a href="{{ $previousLink }}"
-           @class([
-                $paginationButtonClasses,
-                'rounded-l',
-                'bg-gray-800 hover:bg-gray-900' => !empty($previousLink),
-                'bg-gray-400 cursor-default' => empty($previousLink)
-            ])
-           {!! empty($previousLink) ? 'style="pointer-events: none"' : '' !!}
-        >
-            Назад
-        </a>
-        <a href="{{ $nextLink }}"
-            @class([
-                  $paginationButtonClasses,
-                  'rounded-r',
-                  'bg-gray-800 hover:bg-gray-900' => !empty($nextLink),
-                  'bg-gray-400 cursor-default' => empty($nextLink)
-              ])
-            {!! empty($nextLink) ? 'style="pointer-events: none"' : '' !!}
-        >
-            Вперед
-        </a>
-    </div>
+        <div class="inline-flex mt-2 xs:mt-0">
+            <a href="{{ $previousLink }}"
+                @class([
+                     $paginationButtonClasses,
+                     'rounded-l',
+                     'bg-gray-800 hover:bg-gray-900' => !empty($previousLink),
+                     'bg-gray-400 cursor-default' => empty($previousLink)
+                 ])
+                {!! empty($previousLink) ? 'style="pointer-events: none"' : '' !!}
+            >
+                Назад
+            </a>
+            <a href="{{ $nextLink }}"
+                @class([
+                      $paginationButtonClasses,
+                      'rounded-r',
+                      'bg-gray-800 hover:bg-gray-900' => !empty($nextLink),
+                      'bg-gray-400 cursor-default' => empty($nextLink)
+                  ])
+                {!! empty($nextLink) ? 'style="pointer-events: none"' : '' !!}
+            >
+                Вперед
+            </a>
+        </div>
     @endif
 </div>

@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Document;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DocumentsTableSeeder extends Seeder
@@ -12,6 +13,11 @@ class DocumentsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        Document::factory()->count(10)->create();
+        for ($i = 0; $i < 4; $i++) {
+            Document::factory()
+                ->count(5)
+                ->for(User::factory())
+                ->create();
+        }
     }
 }

@@ -2,8 +2,6 @@
 
 namespace Database\Seeders;
 
-use Database\Factories\DocumentFactory;
-use Database\Factories\UserFactory;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -14,8 +12,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            UserFactory::class,
-            DocumentFactory::class
+            UsersTableSeeder::class,
+            DocumentsTableSeeder::class
         ]);
     }
 }
