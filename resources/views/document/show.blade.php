@@ -11,7 +11,7 @@
         </tr>
         <tr>
             <td>Обновлен:</td>
-            <td>{{ \Carbon\Carbon::createFromIsoFormat('YYYY-D-M HH:mm:ssZ', $document['modifyAt'])->diffForHumans()}}</td>
+            <td>{{ \Carbon\Carbon::createFromIsoFormat('YYYY-D-M HH:mm:ssZ', $document['modifyAt'])->diffForHumans() }}</td>
         </tr>
         @if (!empty($document['payload']))
             <tr>
@@ -23,7 +23,7 @@
             </tr>
         @endif
     </table>
-    <a href="{{ route('document.index') }}"
+    <a href="{{ route('document.index', $indexQueryString) }}"
        class="mt-12 text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700">
         К списку документов
     </a>

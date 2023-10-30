@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -15,6 +17,7 @@ class DocumentController extends Controller
     public function index()
     {
         $content = $this->handleRequest();
+        cookie()->queue('query-params', request()->getQueryString());
         return view('document.home', compact('content'));
     }
 
@@ -22,7 +25,8 @@ class DocumentController extends Controller
     {
         $content = $this->handleRequest($id);
         $document = $content['document'];
-        return view('document.show', compact('document'));
+        $indexQueryString = request()->cookie('query-params');
+        return view('document.show', compact('document', 'indexQueryString'));
     }
 
     private function handleRequest(string $path = ''): ?array

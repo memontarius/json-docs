@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\DateTime;
 use App\Services\DocumentService;
 use App\Services\ErrorResponder\ErrorResponder;
 use App\Services\JsonPatcher\JsonPatcherInterface;
@@ -15,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->instance(DateTime::class, new DateTime());
         $this->app->singleton(ErrorResponder::class, ErrorResponder::class);
         $this->app->singleton(DocumentService::class, DocumentService::class);
         $this->app->bind(JsonPatcherInterface::class, MyJsonPatcher::class);

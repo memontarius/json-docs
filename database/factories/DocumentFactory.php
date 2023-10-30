@@ -43,7 +43,7 @@ class DocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => $this->faker->randomElement([DocumentStatus::Published]),
+            'status' => $this->faker->randomElement([DocumentStatus::Draft, DocumentStatus::Published]),
             'user_id' => User::factory(),
             'payload' => $this->faker->randomElement($this->payloads),
             'created_at' => Carbon::now(),
