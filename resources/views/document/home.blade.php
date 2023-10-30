@@ -16,7 +16,7 @@
                 <b>{{ $number++ }}</b><span class="float-right">{{ $document['id'] }}</span>
             </div>
             <div class="w-full text-center text-slate-300 text-sm relative top-0 h-0">
-                {{ \Carbon\Carbon::createFromIsoFormat('YYYY-D-M HH:mm:ssZ', $document['createAt'])->diffForHumans() }}
+                {{ \Carbon\Carbon::parse($document['createAt'])->diffForHumans() }}
             </div>
         </a>
     @endforeach

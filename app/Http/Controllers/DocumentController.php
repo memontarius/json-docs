@@ -3,16 +3,13 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cookie;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 
 class DocumentController extends Controller
 {
-    public string $apiUrl = '/api/v1/document';
+    public string $api = '/api/v1/document';
 
     public function index()
     {
@@ -29,10 +26,10 @@ class DocumentController extends Controller
         return view('document.show', compact('document', 'indexQueryString'));
     }
 
-    private function handleRequest(string $path = ''): ?array
+    private function handleRequest(string $urn = ''): ?array
     {
-        $requestUri = $this->buildUri($this->apiUrl, $path);
-        $responseCode = $this->getContent($this->request($requestUri), $content);
+        $requestUrl = "{$this->api}/{$urn}";
+        $responseCode = $this->getContent($this->request($requestUrl), $content);
         if ($responseCode) {
             abort($responseCode);
         }
@@ -42,12 +39,12 @@ class DocumentController extends Controller
     /**
      * Create request and perform it
      *
-     * @param $uri
+     * @param $url
      * @return Response
      */
-    private function request($uri): Response
+    private function request($url): Response
     {
-        $apiRequest = Request::create($uri,'GET');
+        $apiRequest = Request::create($url,'GET');
         return Route::dispatch($apiRequest);
     }
 
@@ -65,11 +62,5 @@ class DocumentController extends Controller
         }
         $content = json_decode($response->getContent(), true);
         return $content !== null ? null : 429;
-    }
-
-    private function buildUri(string $baseApi, string $path = ''): string
-    {
-        $path = empty($path) ? '' : "/$path";
-        return "{$baseApi}{$path}";
     }
 }

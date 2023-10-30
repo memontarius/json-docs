@@ -16,11 +16,11 @@ class DocumentControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    private string $baseUrl = '/api/v1/document';
+    private string $baseUrl = 'api/v1/document';
 
     public function testIndex(): void
     {
-        $response = $this->getJson($this->baseUrl);
+        $response = $this->getJson('api/v1/document');
 
         $response->assertStatus(200)
             ->assertJsonStructure([

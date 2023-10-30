@@ -7,11 +7,11 @@
     <table class="w-full mt-6">
         <tr>
             <td>Создан:</td>
-            <td>{{ \Carbon\Carbon::createFromIsoFormat('YYYY-D-M HH:mm:ssZ', $document['createAt'])->diffForHumans() }}</td>
+            <td>{{ \Carbon\Carbon::parse($document['createAt'])->diffForHumans() }}</td>
         </tr>
         <tr>
             <td>Обновлен:</td>
-            <td>{{ \Carbon\Carbon::createFromIsoFormat('YYYY-D-M HH:mm:ssZ', $document['modifyAt'])->diffForHumans() }}</td>
+            <td>{{ \Carbon\Carbon::parse($document['modifyAt'])->diffForHumans() }}</td>
         </tr>
         @if (!empty($document['payload']))
             <tr>

@@ -43,11 +43,21 @@ class DocumentFactory extends Factory
     public function definition(): array
     {
         return [
-            'status' => $this->faker->randomElement([DocumentStatus::Draft, DocumentStatus::Published]),
+            'status' => DocumentStatus::Draft,
             'user_id' => User::factory(),
-            'payload' => $this->faker->randomElement($this->payloads),
+            'payload' => null,
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now()
         ];
+    }
+
+    public function withRandomStatusAndPayload(): Factory
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'status' => $this->faker->randomElement([DocumentStatus::Draft, DocumentStatus::Published]),
+                'payload' => $this->faker->randomElement($this->payloads)
+            ];
+        });
     }
 }

@@ -24,7 +24,7 @@ Route::prefix('v1')->group(function () {
 
         Route::middleware('auth.optional:sanctum')->group(function () {
             Route::get('/{document}', [DocumentController::class, 'show']);
-            Route::get('/', [DocumentController::class, 'index'])->name('document.index');
+            Route::get('/', [DocumentController::class, 'index']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
@@ -36,7 +36,6 @@ Route::prefix('v1')->group(function () {
 });
 
 Route::any('{any}', function (ErrorResponder $errorResponder, $any) {
-
     $responseErrorParam = request()->input('response_error');
 
     $responseError = $responseErrorParam ?
