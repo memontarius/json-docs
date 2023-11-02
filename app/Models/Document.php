@@ -46,7 +46,7 @@ class Document extends Model
      */
     public function hasAccess(?Authenticatable $user): bool
     {
-        return ($this->isOwner($user, $this) || $this->status === DocumentStatus::Published);
+        return ($this->isOwner($user) || $this->status === DocumentStatus::Published);
     }
 
     /**

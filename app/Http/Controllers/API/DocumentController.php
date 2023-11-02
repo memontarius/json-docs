@@ -14,6 +14,8 @@ use App\Services\ErrorResponder\ResponseError;
 use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use PDO;
 
 
 class DocumentController extends Controller
@@ -54,21 +56,33 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
-    public function update(Document $document, JsonPatcherInterface $jsonPatcher): DocumentResource|JsonResponse
+    public function update(string $documentId, JsonPatcherInterface $jsonPatcher): DocumentResource|JsonResponse
     {
-        if (!$document->isOwner(request()->user())) {
-            return $this->errorResponder->makeByError(ResponseError::Forbidden);
-        }
+        try {
+            DB::beginTransaction();
 
-        if ($document->status === DocumentStatus::Published) {
-            return $this->errorResponder->makeByError(ResponseError::NotAllowedEditPublishedDocument);
-        }
+            $document = Document::lockForUpdate()->find($documentId);
 
-        if (!$this->documentService->update($document)) {
-            return $this->errorResponder->makeByError(ResponseError::BadRequest);
-        }
+            if (!$document->isOwner(request()->user())) {
+                return $this->errorResponder->makeByError(ResponseError::Forbidden);
+            }
 
-        return new DocumentResource($document);
+            if ($document->status === DocumentStatus::Published) {
+                return $this->errorResponder->makeByError(ResponseError::NotAllowedEditPublishedDocument);
+            }
+
+            if (!$this->documentService->update($document)) {
+                return $this->errorResponder->makeByError(ResponseError::BadRequest);
+            }
+
+            DB::commit();
+
+            return new DocumentResource($document);
+        } catch (\Exception $exception) {
+            DB::rollBack();
+
+            return $this->errorResponder->make('Error update document', 500);
+        }
     }
 
     public function publish(Document $document): DocumentResource|JsonResponse
