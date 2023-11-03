@@ -11,7 +11,6 @@ services:
         container_name: json_docs_nginx
         depends_on:
             - app
-
     app:
         build:
             context: .
@@ -21,16 +20,17 @@ services:
         container_name: json_docs_app
         depends_on:
             - db
-
     db:
-        image: mysql:8.0
+        image: postgres:latest
         restart: always
-        volumes:
-            - ./tmp/db:/var/lib/mysql
         environment:
-            MYSQL_DATABASE: json_docs
-            MYSQL_ROOT_PASSWORD: root
+            POSTGRES_DB: '${DB_DATABASE}'
+            POSTGRES_USER: '${DB_USERNAME}'
+            POSTGRES_PASSWORD: '${DB_PASSWORD}'
+        volumes:
+            - json_docs_pgdata:/var/lib/postgresql/data
         ports:
-            - 8871:3306
-        command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+            - 5433:5432
         container_name: json_docs_db
+volumes:
+    json_docs_pgdata:
