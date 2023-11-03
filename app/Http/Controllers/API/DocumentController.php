@@ -7,15 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
-use App\Models\User;
 use App\Services\DocumentService;
 use App\Services\ErrorResponder\ErrorResponder;
 use App\Services\ErrorResponder\ResponseError;
-use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use PDO;
 
 
 class DocumentController extends Controller
@@ -56,7 +52,7 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
-    public function update(string $documentId, JsonPatcherInterface $jsonPatcher): DocumentResource|JsonResponse
+    public function update(string $documentId): DocumentResource|JsonResponse
     {
         try {
             DB::beginTransaction();

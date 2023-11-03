@@ -41,7 +41,6 @@ class Document extends Model
 
     /**
      * @param Authenticatable|null $user
-     * @param Document $document
      * @return bool
      */
     public function hasAccess(?Authenticatable $user): bool
@@ -51,7 +50,6 @@ class Document extends Model
 
     /**
      * @param Authenticatable|null $user
-     * @param Document $document
      * @return bool
      */
     public function isOwner(?Authenticatable $user): bool

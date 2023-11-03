@@ -5,8 +5,7 @@ namespace App\Services;
 use App\Enums\DocumentStatus;
 use App\Models\Document;
 use App\Models\User;
-use App\Services\JsonPatcher\JsonPatcher;
-use Illuminate\Contracts\Auth\Authenticatable;
+use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -31,7 +30,7 @@ class DocumentService
 
     public function update(Document $document): bool
     {
-        $jsonPatcher = app()->make(JsonPatcher::class);
+        $jsonPatcher = app()->make(JsonPatcherInterface::class);
         $newPayload = null;
         $userPayload = json_decode(json_encode(
             request()->json('document.payload')

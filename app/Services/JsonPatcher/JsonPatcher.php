@@ -16,8 +16,8 @@ class JsonPatcher implements JsonPatcherInterface
     /**
      * Apply patching to json
      *
-     * @param mixed $original
-     * @param mixed $modified
+     * @param mixed $origin
+     * @param mixed $patch
      * @return bool
      */
     public function apply(mixed &$origin, mixed $patch): bool

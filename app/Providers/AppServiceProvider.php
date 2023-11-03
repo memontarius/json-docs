@@ -22,12 +22,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(TimeZoneRecognizer::class, function () {
             $cachedTimeZones = Cache::get($this->timeZonesKey, []);
-            $cachedTimeZones = [];
             return new TimeZoneRecognizer('http://ip-api.com/json/', $cachedTimeZones);
         });
+
         $this->app->singleton(ErrorResponder::class, ErrorResponder::class);
         $this->app->singleton(DocumentService::class, DocumentService::class);
-        $this->app->bind(JsonPatcherInterface::class, MyJsonPatcher::class);
+        $this->app->singleton(JsonPatcherInterface::class, MyJsonPatcher::class);
 
         App::terminating(function () {
             $timeZoneRecognizer = App::make(TimeZoneRecognizer::class);
