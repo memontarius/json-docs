@@ -28,9 +28,9 @@ services:
             POSTGRES_USER: '${DB_USERNAME}'
             POSTGRES_PASSWORD: '${DB_PASSWORD}'
         volumes:
-            - json_docs_pgdata:/var/lib/postgresql/data
+            - pgdata:/var/lib/postgresql/data
         ports:
             - 5433:5432
         container_name: json_docs_db
 volumes:
-    json_docs_pgdata:
+    pgdata:

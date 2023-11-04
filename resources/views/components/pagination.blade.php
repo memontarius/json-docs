@@ -22,7 +22,7 @@
         @endphp
     </span>
     <!-- Buttons -->
-    @if (!($startNumber == 1 && $endNumber == $total))
+    @if (!($startNumber == 1 && $endNumber == $total) && $total != 0)
         <div class="inline-flex mt-2 xs:mt-0">
             <a href="{{ $previousLink }}"
                 @class([
