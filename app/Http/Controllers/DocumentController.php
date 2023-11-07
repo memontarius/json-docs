@@ -18,9 +18,9 @@ class DocumentController extends Controller
         return view('document.home', compact('content'));
     }
 
-    public function show(string $id)
+    public function show(string $documentId)
     {
-        $content = $this->handleRequest($id);
+        $content = $this->handleRequest($documentId);
         $document = $content['document'];
         $indexQueryString = request()->cookie('query-params');
         return view('document.show', compact('document', 'indexQueryString'));

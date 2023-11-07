@@ -23,14 +23,14 @@ Route::prefix('v1')->group(function () {
     Route::prefix('document')->group(function () {
 
         Route::middleware('auth.optional:sanctum')->group(function () {
-            Route::get('/{document}', [DocumentController::class, 'show']);
+            Route::get('/{documentId}', [DocumentController::class, 'show']);
             Route::get('/', [DocumentController::class, 'index']);
         });
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::post('/', [DocumentController::class, 'store']);
-            Route::patch('/{document}', [DocumentController::class, 'update']);
-            Route::post('/{document}/publish', [DocumentController::class, 'publish']);
+            Route::patch('/{documentId}', [DocumentController::class, 'update']);
+            Route::post('/{documentId}/publish', [DocumentController::class, 'publish']);
         });
     });
 });
@@ -44,8 +44,3 @@ Route::any('{any}', function (ErrorResponder $errorResponder, $any) {
 
     return $errorResponder->makeByError($responseError);
 })->where('any', '.*')->name('fallback');
-
-/* Not working with POST methods
-Route::fallback(function (ErrorResponder $errorResponder) {
-    return $errorResponder->makeByError(ResponseError::PageNotFound);
-})->name('fallback');*/

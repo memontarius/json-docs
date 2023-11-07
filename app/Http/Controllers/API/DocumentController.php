@@ -3,15 +3,17 @@
 namespace App\Http\Controllers\API;
 
 use App\Enums\DocumentStatus;
+use App\Exceptions\ForbiddenException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\DocumentRequest;
 use App\Http\Resources\DocumentResource;
 use App\Http\Resources\DocumentsResource;
 use App\Models\Document;
 use App\Services\DocumentService;
 use App\Services\ErrorResponder\ErrorResponder;
 use App\Services\ErrorResponder\ResponseError;
+use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
 
 class DocumentController extends Controller
@@ -43,8 +45,10 @@ class DocumentController extends Controller
         return new DocumentsResource($documents);
     }
 
-    public function show(Document $document): DocumentResource|JsonResponse
+    public function show(string $documentId): DocumentResource|JsonResponse
     {
+        $document = Document::findOrFail($documentId);
+
         if (!$document->hasAccess(request()->user())) {
             return $this->errorResponder->makeByError(ResponseError::Forbidden);
         }
@@ -52,43 +56,43 @@ class DocumentController extends Controller
         return new DocumentResource($document);
     }
 
+    /**
+     * @throws Exception
+     */
     public function update(string $documentId): DocumentResource|JsonResponse
     {
-        try {
-            DB::beginTransaction();
-
-            $document = Document::lockForUpdate()->find($documentId);
-
-            if (!$document->isOwner(request()->user())) {
-                return $this->errorResponder->makeByError(ResponseError::Forbidden);
+        return $this->documentService->updateByTransaction(
+            $documentId,
+            function (Document $document): ?ResponseError {
+                return match (true) {
+                    !$document->isOwner(request()->user()) => ResponseError::Forbidden,
+                    $document->status === DocumentStatus::Published => ResponseError::NotAllowedEditPublishedDocument,
+                    !$this->documentService->update($document) => ResponseError::BadRequest,
+                    default => null
+                };
+            },
+            function (Document $document): ?ResponseError {
+                $isSuccessful = $this->documentService->update($document);
+                return $isSuccessful ? null : ResponseError::BadRequest;
             }
-
-            if ($document->status === DocumentStatus::Published) {
-                return $this->errorResponder->makeByError(ResponseError::NotAllowedEditPublishedDocument);
-            }
-
-            if (!$this->documentService->update($document)) {
-                return $this->errorResponder->makeByError(ResponseError::BadRequest);
-            }
-
-            DB::commit();
-
-            return new DocumentResource($document);
-        } catch (\Exception $exception) {
-            DB::rollBack();
-
-            return $this->errorResponder->make('Error update document', 500);
-        }
+        );
     }
 
-    public function publish(Document $document): DocumentResource|JsonResponse
+    /**
+     * @throws Exception
+     */
+    public function publish(string $documentId): DocumentResource|JsonResponse
     {
-        if (!$document->isOwner(request()->user())) {
-            return $this->errorResponder->makeByError(ResponseError::Forbidden);
-        }
-
-        $this->documentService->publish($document);
-
-        return new DocumentResource($document);
+        return $this->documentService->updateByTransaction(
+            $documentId,
+            fn (Document $document) =>
+                $document->isOwner(request()->user())
+                    ? null
+                    : ResponseError::Forbidden,
+            function (Document $document): ?ResponseError {
+                $this->documentService->publish($document);
+                return null;
+            }
+        );
     }
 }

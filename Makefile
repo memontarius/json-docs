@@ -20,23 +20,26 @@ up:
 dw:
 	docker compose down
 
-prepare-env:
-	cp -n .env.example .env || true
-	make key
-
 install:
 	composer install
 	npm i
 	npm run build
 
-start: up
+prepare-env:
+	cp -n .env.example .env || true
+	make key
+
+setup: up
 	sleep 3
+	sudo chmod 777 -R storage
 	make c-prepare-db
 
 c-prepare-db:
-	docker exec json_docs_app chmod 777 -R storage
 	docker exec json_docs_app make mig
 
 c-seed-db:
 	docker exec json_docs_app make seed
+
+c-test:
+	docker exec json_docs_app make test
 

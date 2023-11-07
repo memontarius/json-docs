@@ -3,15 +3,25 @@
 namespace App\Services;
 
 use App\Enums\DocumentStatus;
+use App\Http\Resources\DocumentResource;
 use App\Models\Document;
 use App\Models\User;
+use App\Services\ErrorResponder\ErrorResponder;
+use App\Services\ErrorResponder\ResponseError;
 use App\Services\JsonPatcher\JsonPatcherInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
+use Closure;
 
 class DocumentService
 {
+    public function __construct(private readonly ErrorResponder $errorResponder)
+    {
+    }
+
     public function index(?User $user, int $perPage): LengthAwarePaginator
     {
         if ($user) {
@@ -71,5 +81,43 @@ class DocumentService
         $document->update([
             'status' => DocumentStatus::Published
         ]);
+    }
+
+    /**
+     * Update document by transaction
+     *
+     * @param string $documentId
+     * @param Closure $solveError (Document): ?ResponseError
+     * @param Closure $solveUpdate (Document): ?ResponseError
+     * @return DocumentResource|JsonResponse
+     * @throws Exception
+     */
+    public function updateByTransaction(string $documentId, Closure $solveError, Closure $solveUpdate): DocumentResource|JsonResponse
+    {
+        try {
+            DB::beginTransaction();
+
+            $document = Document::lockForUpdate()->find($documentId);
+            $error = $document == null
+                ? ResponseError::PageNotFound
+                : $solveError($document);
+
+            if ($error == null) {
+                $error = $solveUpdate($document);
+            }
+
+            if ($error === null) {
+                DB::commit();
+            } else {
+                DB::rollBack();
+            }
+        } catch (Exception $exception) {
+            DB::rollBack();
+            throw $exception;
+        }
+
+        return $error === null
+            ? new DocumentResource($document)
+            : $this->errorResponder->makeByError($error);
     }
 }

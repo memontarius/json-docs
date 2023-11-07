@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', [DocumentController::class, 'index'])->name('document.index');
-Route::get('/document/{id}', [DocumentController::class, 'show'])->name('document.show');
+Route::get('/document/{documentId}', [DocumentController::class, 'show'])->name('document.show');
